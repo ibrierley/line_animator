@@ -1,4 +1,4 @@
-# line_animator
+# Flutter line_animator (for flutter_map, but may work with others)
 Interpolator for LatLngs (possibly pairs of doubles) that returns a list of points and an angle and current point.
 
 So you can animate lines (like polylines, and it will probably work for polygons sort of, anything that takes a latlng list).

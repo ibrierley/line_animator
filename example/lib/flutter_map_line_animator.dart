@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    points = getPoints(1);
+    points = getPoints(0);
     super.initState();
   }
 
@@ -58,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
             builtPoints: builtPoints,
             duration: Duration(seconds: 5),
             isReversed: isReversed,
+            interpolateBetweenPoints: true,
             stateChangeCallback: (status, pointList) {
               if(status == AnimationStatus.completed) {
                 WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {isReversed = !isReversed;}));

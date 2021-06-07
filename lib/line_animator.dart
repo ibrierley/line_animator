@@ -32,6 +32,7 @@ class PointInterpolator {
   int lastPointIndex = 1;
   double totalDistance;
   LatLng _previousPoint;
+  double _lastAngle;
   LatLng interpolatedPoint;
   bool isReversed = false;
 
@@ -79,7 +80,7 @@ class PointInterpolator {
     var thisPoint;
 
     for( var c=lastPointIndex; c < points.length ; c++ ) {
-      if( animValue > pointDistanceSteps[c].distance ) {
+      if( animValue >= pointDistanceSteps[c].distance ) {
         /// Our animation is past the next point, so add it in
         /// but remove any interpolated point that we were using
         if( interpolatedPoint != null ) {
@@ -137,9 +138,14 @@ class PointInterpolator {
           thisPoint.longitude - _previousPoint.longitude ) - 4.7128 ;
     }
 
+    // We do this in case we're not interpolating visually otherwise
+    // point and prev point are the same most of the time
+    if((_lastAngle == null) || (thisPoint != _previousPoint)) _lastAngle = angle;
+
     _previousPoint = thisPoint;
 
-    return InterpolatedResult(point: thisPoint, angle: angle, animValue: animValue, controllerValue: controllerValue, builtPoints: builtPoints);
+    return InterpolatedResult(point: thisPoint, angle: _lastAngle, animValue: animValue,
+        controllerValue: controllerValue, builtPoints: builtPoints);
   }
 
   double haversine(LatLng p1, LatLng p2) {
@@ -171,10 +177,11 @@ class LineAnimator extends StatefulWidget {
   final double end;
   final bool isReversed;
   final AnimationController controller;
+  final bool interpolateBetweenPoints;
 
   const LineAnimator ({ Key key, this.duration, this.child, this.originalPoints, this.builtPoints, this.distanceFunc,
     this.duringCallback,  this.stateChangeCallback,
-    this.begin=0.0, this.end, this.controller, this.isReversed }) : super(key: key);
+    this.begin=0.0, this.end, this.controller, this.isReversed=false, this.interpolateBetweenPoints=true }) : super(key: key);
 
   @override
   _LineAnimatorState createState() => _LineAnimatorState();
@@ -183,7 +190,6 @@ class LineAnimator extends StatefulWidget {
 class _LineAnimatorState extends State<LineAnimator> with TickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
-  bool interpolateBetweenPoints = true;
   List<LatLng> builtPoints = [];
   PointInterpolator interpolator;
 
@@ -209,10 +215,12 @@ originalPoints: widget.originalPoints, distanceFunc: null, isReversed: widget.is
     animation = Tween<double>( begin: widget.begin, end: interpolator.totalDistance ).animate(controller)
       ..addListener(() {
 
-        InterpolatedResult interpolatedResult = interpolator.interpolate(controller.value, animation.value, true); /// not sure we need a tween at this point anymore, controller only ?
+        InterpolatedResult interpolatedResult = interpolator.interpolate(controller.value,
+            animation.value, widget.interpolateBetweenPoints); /// not sure we need a tween at this point anymore, controller only ?
 
         if(interpolatedResult.point != null)
-          widget.duringCallback(interpolatedResult.builtPoints, interpolatedResult.point, interpolatedResult.angle, animation.value);
+          widget.duringCallback(interpolatedResult.builtPoints,
+              interpolatedResult.point, interpolatedResult.angle, animation.value);
 
       })..addStatusListener((status) {
         widget.stateChangeCallback(animation.status, builtPoints);

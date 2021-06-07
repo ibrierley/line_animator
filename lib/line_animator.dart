@@ -56,6 +56,7 @@ class PointInterpolator {
     }
 
     builtPoints.add(LatLng(points[0].latitude, points[0].longitude));
+    builtPoints.add(LatLng(points[0].latitude, points[0].longitude));
 
     pointDistanceSteps = [PercentageStep(distance: 0.0, percent: 0.0)];
 
@@ -68,7 +69,7 @@ class PointInterpolator {
     }
 
     /// build a list of percentages now we know the length, for how far the point is along
-    for (var c=0; c < points.length - 2; c++) {
+    for (var c=0; c < points.length ; c++) {
       pointDistanceSteps[c].percent = pointDistanceSteps[c].distance / totalDistance;
     }
 
@@ -77,7 +78,7 @@ class PointInterpolator {
   InterpolatedResult interpolate( controllerValue, animValue, interpolateBetweenPoints ) {
     var thisPoint;
 
-    for( var c=lastPointIndex; c < points.length - 1; c++ ) {
+    for( var c=lastPointIndex; c < points.length ; c++ ) {
       if( animValue > pointDistanceSteps[c].distance ) {
         /// Our animation is past the next point, so add it in
         /// but remove any interpolated point that we were using
@@ -89,6 +90,7 @@ class PointInterpolator {
         thisPoint = LatLng(points[c].latitude, points[c].longitude);
         builtPoints.add(thisPoint);
         lastPointIndex = c+1;
+
       } else {
 
         /// only need this if we want to draw inbetween points...
@@ -112,15 +114,21 @@ class PointInterpolator {
           interpolatedPoint = LatLng(
               intermediateLat, intermediateLon); // last tail point
 
-          if (builtPoints.length >= c) {
-            builtPoints[c - 1] = interpolatedPoint;
+          if (builtPoints.length > c) {
+            builtPoints[c] = interpolatedPoint;
           } else {
             builtPoints.add(interpolatedPoint);
           }
         }
+
         thisPoint = interpolatedPoint;
         break;
       }
+    }
+
+    if( thisPoint == null ) {
+      thisPoint = LatLng(points[lastPointIndex - 1].latitude,
+          points[lastPointIndex - 1].longitude);
     }
 
     double angle = 0.0;

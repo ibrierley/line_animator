@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   LatLng markerPoint;
   List points;
   bool isReversed = false;
+  ValueNotifier<LatLng> latLng = ValueNotifier<LatLng>(LatLng(0.0,0.0));
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
               builtPoints = newPoints;
               markerPoint = point;
               markerAngle = angle;
+              latLng.value = point; // valuenotifier
               WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
             },
 
@@ -90,7 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ]
                   ),
-
                   MarkerLayerOptions(
                       markers: [
                         Marker(
@@ -106,11 +107,44 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )
                                 ),
                               ),
-                        )
+                        ),
                       ]
                   ),
+                ],
 
-                ]
+              /* Example using widget/marker refresh only rather than setState
+                 on whole widget refreshing the full flutter_map
+                 Just be careful of layer/widget ordering when mixing
+
+              nonRotatedChildren: [
+                /// 2nd method value notifier, only refresh the widget
+                ValueListenableBuilder(
+                    valueListenable: latLng,
+                    builder: (context, value, widget) {
+                      return MarkerLayerWidget(options: MarkerLayerOptions(
+                        markers: [
+                          Marker(
+                            width: 80.0,
+                            height: 80.0,
+                            point: value,
+                            builder: (ctx) {
+                              print("Building $value $markerAngle");
+                                return Container(
+                                  child: Transform.rotate(
+                                      angle: markerAngle,
+                                      child: Icon(
+                                          Icons.airplanemode_active_sharp
+                                      )
+                                  ),
+                                );
+                            }
+                          ),
+                        ],
+                      ));
+                    }
+                )
+              ],
+              */
             )
         )
     );

@@ -20,6 +20,7 @@ LineAnimator ({ Key key,
   this.begin=0.0, 
   this.end, 
   this.controller, 
+  this.interpolateBetweenPoints,
   this.isReversed 
   })
   ```
@@ -42,5 +43,10 @@ You should be able to either use the LineAnimator() Widget (see examples folder 
 See the main lib/line_animator example of how the LineAnimator widget accesses PointInterpolator. Also examples/lib/flutter_map_line_animator.dart to see it interface with flutter_map (it doesn't need a plugin at all, it just references a list of points)
 
 If you use the class direct, you will have to use your own controller/tweener.
+
+If you don't want smooth interpolation, and just want the line drawn when destination reached and not inbetween, then set interpolateBetweenPoints to false.
+
+Note, the example calls a setState on the whole flutter_map/homepage widget for simplicity. I suspect you may want to see if you can use this as a separate markerwidget child and only setState on that. See the commented out section in the example.
+
 
 

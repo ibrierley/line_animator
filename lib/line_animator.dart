@@ -68,7 +68,7 @@ class PointInterpolator {
     }
 
     /// build a list of percentages now we know the length, for how far the point is along
-    for (var c=0; c < points.length - 2; c++) {
+    for (var c=0; c < points.length ; c++) {
       pointDistanceSteps[c].percent = pointDistanceSteps[c].distance / totalDistance;
     }
 
@@ -77,7 +77,7 @@ class PointInterpolator {
   InterpolatedResult interpolate( controllerValue, animValue, interpolateBetweenPoints ) {
     var thisPoint;
 
-    for( var c=lastPointIndex; c < points.length - 1; c++ ) {
+    for( var c=lastPointIndex; c < points.length ; c++ ) {
       if( animValue > pointDistanceSteps[c].distance ) {
         /// Our animation is past the next point, so add it in
         /// but remove any interpolated point that we were using

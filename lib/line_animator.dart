@@ -68,7 +68,7 @@ class PointInterpolator {
     }
 
     /// build a list of percentages now we know the length, for how far the point is along
-    for (var c=0; c < points.length - 2; c++) {e;
+    for (var c=0; c < points.length - 2; c++) {
       pointDistanceSteps[c].percent = pointDistanceSteps[c].distance / totalDistance;
     }
 

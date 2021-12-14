@@ -11,7 +11,7 @@ class InterpolatedResult {
   double animValue;
   double controllerValue;
 
-  InterpolatedResult({this.point, this.angle, this.builtPoints, this.animValue, this.controllerValue});
+  InterpolatedResult({required this.point, required this.angle, required this.builtPoints, required this.animValue, required this.controllerValue});
 }
 
 class PercentageStep {
@@ -19,7 +19,7 @@ class PercentageStep {
   double distance;
   double time;
 
-  PercentageStep({this.percent, this.distance, this.time});
+  PercentageStep({ this.percent=0.0, required this.distance, this.time=10.0 });
 }
 
 class PointInterpolator {
@@ -27,16 +27,16 @@ class PointInterpolator {
   List<LatLng> builtPoints = [];
   List<LatLng> points = [];
   List<LatLng> originalPoints = [];
-  Function(LatLng, LatLng) distanceFunc;
-  List<PercentageStep> pointDistanceSteps;
+  Function(LatLng, LatLng)? distanceFunc;
+  late List<PercentageStep> pointDistanceSteps;
   int lastPointIndex = 1;
-  double totalDistance;
-  LatLng _previousPoint;
-  double _lastAngle;
-  LatLng interpolatedPoint;
+  double totalDistance = 0.0;
+  LatLng? _previousPoint;
+  late double _lastAngle = 0.0;
+  LatLng? interpolatedPoint;
   bool isReversed = false;
 
-  PointInterpolator({this.originalPoints, this.distanceFunc, this.isReversed}) {
+  PointInterpolator({ required this.originalPoints, this.distanceFunc, required this.isReversed}) {
     reload();
   }
 
@@ -66,7 +66,7 @@ class PointInterpolator {
     /// build up a list of distances that each point must pass before being displayed
     for (var c=0; c < points.length - 1; c++) {
       totalDistance += myDistanceFunc(points[c], points[c+1]);
-      pointDistanceSteps.add(PercentageStep(distance: totalDistance, percent: null));
+      pointDistanceSteps.add(PercentageStep(distance: totalDistance, percent: 0.0));     /// Check percent
     }
 
     /// build a list of percentages now we know the length, for how far the point is along
@@ -116,9 +116,9 @@ class PointInterpolator {
               intermediateLat, intermediateLon); // last tail point
 
           if (builtPoints.length > c) {
-            builtPoints[c] = interpolatedPoint;
+            builtPoints[c] = interpolatedPoint!;
           } else {
-            builtPoints.add(interpolatedPoint);
+            builtPoints.add(interpolatedPoint!);
           }
         }
 
@@ -133,14 +133,17 @@ class PointInterpolator {
     }
 
     double angle = 0.0;
-    if(_previousPoint != null && thisPoint != null) {
-      angle = -atan2(thisPoint.latitude - _previousPoint.latitude,
-          thisPoint.longitude - _previousPoint.longitude ) - 4.7128 ;
+    if(_previousPoint != null)
+      if(thisPoint != null) {
+        angle = -atan2(thisPoint.latitude - _previousPoint?.latitude,
+          thisPoint.longitude - _previousPoint?.longitude ) - 4.7128 ;
     }
 
     // We do this in case we're not interpolating visually otherwise
     // point and prev point are the same most of the time
-    if((_lastAngle == null) || (thisPoint != _previousPoint)) _lastAngle = angle;
+    if(_lastAngle == null) _lastAngle = angle;
+    if(thisPoint != _previousPoint) _lastAngle = angle;
+    //if((_lastAngle == null) || (thisPoint != _previousPoint)) _lastAngle = angle;
 
     _previousPoint = thisPoint;
 
@@ -167,31 +170,31 @@ class PointInterpolator {
 
 class LineAnimator extends StatefulWidget {
   final Widget child;
-  final List originalPoints;
-  final List builtPoints;
-  final Function distanceFunc;
-  final Function stateChangeCallback;
-  final Function duringCallback;
+  final List<LatLng> originalPoints;
+  final List<LatLng> builtPoints;
+  final Function? distanceFunc;
+  final Function? stateChangeCallback;
+  final Function? duringCallback;
   final Duration duration;
-  final double begin;
-  final double end;
+  final double? begin;
+  final double? end;
   final bool isReversed;
-  final AnimationController controller;
+  final AnimationController? controller;
   final bool interpolateBetweenPoints;
 
-  const LineAnimator ({ Key key, this.duration, this.child, this.originalPoints, this.builtPoints, this.distanceFunc,
+  const LineAnimator ({ Key? key, required this.duration, required this.child, required this.originalPoints, required this.builtPoints, this.distanceFunc,
     this.duringCallback,  this.stateChangeCallback,
-    this.begin=0.0, this.end, this.controller, this.isReversed=false, this.interpolateBetweenPoints=true }) : super(key: key);
+    this.begin=0.0, this.end=1.0, this.controller, this.isReversed=false, this.interpolateBetweenPoints=true }) : super(key: key);
 
   @override
   _LineAnimatorState createState() => _LineAnimatorState();
 }
 
 class _LineAnimatorState extends State<LineAnimator> with TickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController controller;
+  late Animation<double> animation;
+  late AnimationController controller;
   List<LatLng> builtPoints = [];
-  PointInterpolator interpolator;
+  late PointInterpolator interpolator;
 
 
   @override
@@ -201,6 +204,7 @@ class _LineAnimatorState extends State<LineAnimator> with TickerProviderStateMix
 
   @override
   void initState() {
+    controller = AnimationController(duration: widget.duration, vsync: this);
     startAnimation();
     super.initState();
   }
@@ -219,11 +223,11 @@ originalPoints: widget.originalPoints, distanceFunc: null, isReversed: widget.is
             animation.value, widget.interpolateBetweenPoints); /// not sure we need a tween at this point anymore, controller only ?
 
         if(interpolatedResult.point != null)
-          widget.duringCallback(interpolatedResult.builtPoints,
+          widget.duringCallback?.call(interpolatedResult.builtPoints,
               interpolatedResult.point, interpolatedResult.angle, animation.value);
 
       })..addStatusListener((status) {
-        widget.stateChangeCallback(animation.status, builtPoints);
+        widget.stateChangeCallback?.call(animation.status, builtPoints);
       });
 
     controller.forward();

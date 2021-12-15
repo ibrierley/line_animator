@@ -23,12 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_map:
-    git:
-      #url: https://github.com/maRci002/flutter_map.git
-      #url: https://github.com/fleaflet/flutter_map.git
-      url: https://github.com/fleaflet/flutter_map.git
-      ref: 1882f32298082a72ca62f8e54d479334a055a55a
+  flutter_map: any
   latlong2: 0.8.0
   line_animator:
     path: ../

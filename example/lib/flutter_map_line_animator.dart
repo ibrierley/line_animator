@@ -33,8 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<LatLng> builtPoints = [];
   double markerAngle = 0.0;
-  LatLng markerPoint;
-  List points;
+  LatLng markerPoint = LatLng(0.0,0.0);
+  late List<LatLng> points;
   bool isReversed = false;
   ValueNotifier<LatLng> latLng = ValueNotifier<LatLng>(LatLng(0.0,0.0));
 
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
             interpolateBetweenPoints: true,
             stateChangeCallback: (status, pointList) {
               if(status == AnimationStatus.completed) {
-                WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {isReversed = !isReversed;}));
+                WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {isReversed = !isReversed;}));
               }
             },
             duringCallback: (newPoints, point, angle, tweenVal) {
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
               markerPoint = point;
               markerAngle = angle;
               latLng.value = point; // valuenotifier
-              WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+              WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {}));
             },
 
             child: FlutterMap(

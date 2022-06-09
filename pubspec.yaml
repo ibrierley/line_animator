@@ -1,6 +1,6 @@
 name: line_animator
 description: A Line Animator for Flutter
-version: 1.0.0+2
+version: 1.0.0+3
 repository: https://github.com/ibrierley/line_animator
 environment:
   sdk: ">=2.12.0 <3.0.0"

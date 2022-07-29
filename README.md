@@ -1,4 +1,7 @@
 # Flutter line_animator (for flutter_map, but may work with others)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F1F8E2YBE)
+
 Interpolator for LatLngs (possibly pairs of doubles) that returns a list of points and an angle and current point.
 
 <img src="https://github.com/ibrierley/line_animator/raw/master/lineanim.gif" width="400" height="800">

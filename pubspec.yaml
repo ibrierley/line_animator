@@ -1,15 +1,15 @@
 name: line_animator
 description: A Line Animator for Flutter
-version: 1.0.0+3
+version: 2.0.0
 repository: https://github.com/ibrierley/line_animator
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
+  latlong2: ^0.9.1
 
-  latlong2: ^0.8.0
   #cupertino_icons: ^1.0.2
 
 dev_dependencies:

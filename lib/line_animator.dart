@@ -101,8 +101,6 @@ class PointInterpolator {
           var lastPerc = pointDistanceSteps[c - 1].percent;
           var nextPerc = pointDistanceSteps[c].percent;
 
-          if (nextPerc == null) break;
-
           var perc = (controllerValue - lastPerc) / ///  swap this around with not 0-1 and get rid of tweener ?
               (nextPerc - lastPerc);
 
@@ -141,7 +139,7 @@ class PointInterpolator {
 
     // We do this in case we're not interpolating visually otherwise
     // point and prev point are the same most of the time
-    if(_lastAngle == null) _lastAngle = angle;
+
     if(thisPoint != _previousPoint) _lastAngle = angle;
     //if((_lastAngle == null) || (thisPoint != _previousPoint)) _lastAngle = angle;
 
@@ -213,8 +211,7 @@ class _LineAnimatorState extends State<LineAnimator> with TickerProviderStateMix
     interpolator = PointInterpolator(
 originalPoints: widget.originalPoints, distanceFunc: null, isReversed: widget.isReversed);
 
-    if( controller == null)
-      controller = AnimationController(duration: widget.duration, vsync: this);
+    controller = AnimationController(duration: widget.duration, vsync: this);
 
     animation = Tween<double>( begin: widget.begin, end: interpolator.totalDistance ).animate(controller)
       ..addListener(() {
@@ -222,8 +219,7 @@ originalPoints: widget.originalPoints, distanceFunc: null, isReversed: widget.is
         InterpolatedResult interpolatedResult = interpolator.interpolate(controller.value,
             animation.value, widget.interpolateBetweenPoints); /// not sure we need a tween at this point anymore, controller only ?
 
-        if(interpolatedResult.point != null)
-          widget.duringCallback?.call(interpolatedResult.builtPoints,
+        widget.duringCallback?.call(interpolatedResult.builtPoints,
               interpolatedResult.point, interpolatedResult.angle, animation.value);
 
       })..addStatusListener((status) {

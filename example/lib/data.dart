@@ -1578,5 +1578,5 @@ final lines = [
 ];
 
 List<LatLng> getPoints(int index) {
-  return lines[index].map((e) => LatLng(e[1], e[0])).toList();
+  return lines[index].map((e) => LatLng(e[1].toDouble(), e[0].toDouble())).toList();
 }
